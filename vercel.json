@@ -1,6 +1,4 @@
 {
   "framework": "nextjs",
-  "projectSettings": {
-    "rootDirectory": "apps/web"
-  }
+  "rootDirectory": "apps/web"
 }
