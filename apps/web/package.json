@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "postinstall": "pnpm --filter @agilgestion/infrastructure exec drizzle-kit push --config=../../drizzle.config.ts",
+    "postinstall": "pnpm --filter @agilgestion/infrastructure exec drizzle-kit push",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
