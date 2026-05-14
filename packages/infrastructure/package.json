@@ -11,9 +11,9 @@
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push"
+    "db:generate": "drizzle-kit generate --config=../../drizzle.config.ts",
+    "db:migrate": "drizzle-kit migrate --config=../../drizzle.config.ts",
+    "db:push": "drizzle-kit push --config=../../drizzle.config.ts"
   },
   "dependencies": {
     "@agilgestion/domain": "workspace:*",
