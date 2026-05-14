@@ -98,8 +98,9 @@ export default function DashboardPage() {
           const data = await res.json();
           setProductos(data.data || []);
         }
-      } catch {
-        console.error('Failed to fetch productos');
+      } catch (err) {
+        console.error('Failed to fetch productos:', err);
+        toast.error('Error al cargar productos');
       } finally {
         setLoadingProductos(false);
       }

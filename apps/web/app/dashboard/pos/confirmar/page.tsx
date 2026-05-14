@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
 import type { MedioPago } from '@agilgestion/domain';
 import { toast } from 'sonner';
+import { apiFetch } from '@/lib/api-client';
 import { ArrowLeft, CheckCircle, CreditCard, Banknote, Building2 } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { motion, AnimatePresence } from 'motion/react';
@@ -23,9 +24,10 @@ const metodosPago: { value: MedioPago; label: string; icon: React.ReactNode }[] 
 ];
 
 export default function ConfirmarPagoPage() {
-  const [metodoPago, setMetodoPago] = useState<MedioPago>('EFECTIVO');
+  const [metodoPago, setMetodoPago] = useState<MedioPago | null>(null);
   const [loading, setLoading] = useState(false);
   const [montoRecibido, setMontoRecibido] = useState('');
+  const [qrCodePath, setQrCodePath] = useState<string | null>(null);
   const router = useRouter();
 
   const { lineas, getTotals, lastVenta, status, procesarVenta, clearSale } = usePOSStore();
@@ -37,16 +39,33 @@ export default function ConfirmarPagoPage() {
     }
   }, [lineas, status, router]);
 
+  useEffect(() => {
+    const fetchBusiness = async () => {
+      try {
+        const res = await apiFetch('/api/admin/negocio');
+        if (res.ok) {
+          const data = await res.json();
+          setQrCodePath(data.data.qrCodePath || null);
+        }
+      } catch {
+        // Silently fail — QR is optional
+      }
+    };
+    fetchBusiness();
+  }, []);
+
   const cambio = metodoPago === 'EFECTIVO' && montoRecibido
     ? Math.max(0, parseFloat(montoRecibido) - total)
     : 0;
 
-  const canConfirm = metodoPago === 'EFECTIVO'
-    ? parseFloat(montoRecibido) >= total
-    : true;
+  const canConfirm = metodoPago
+    ? metodoPago === 'EFECTIVO'
+      ? parseFloat(montoRecibido) >= total
+      : true
+    : false;
 
   const handleConfirmar = async () => {
-    toast.warning('Verificando disponibilidad de stock...');
+    if (!metodoPago) return;
     setLoading(true);
     try {
       await procesarVenta(metodoPago);
@@ -241,6 +260,41 @@ export default function ConfirmarPagoPage() {
                       </motion.div>
                     )}
                   </AnimatePresence>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
+          {metodoPago === 'TRANSFERENCIA' && (
+            <motion.div
+              key="transferencia"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Card>
+                <CardContent className="pt-4 space-y-3">
+                  {qrCodePath ? (
+                    <div className="flex flex-col items-center gap-3">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={qrCodePath}
+                        alt="Codigo QR para transferencia"
+                        className="h-48 w-48 rounded-lg border border-border object-contain bg-white"
+                      />
+                      <p className="text-sm text-muted-foreground text-center">
+                        Escanea el codigo QR para realizar la transferencia
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 py-4">
+                      <Building2 className="h-8 w-8 text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground text-center">
+                        El negocio no ha configurado un codigo QR para transferencias
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>

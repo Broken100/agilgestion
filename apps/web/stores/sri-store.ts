@@ -31,8 +31,8 @@ export const useSriStore = create<SriState>((set, get) => ({
   processQueue: async () => {
     try {
       await apiFetch('/api/sri-sync', { method: 'POST' });
-    } catch {
-      // Queue will retry on next online event
+    } catch (err) {
+      console.error('SRI sync queue error:', err);
     }
   },
 }));

@@ -1,0 +1,1 @@
+ALTER TABLE "businesses" ADD COLUMN "qr_code_path" text;

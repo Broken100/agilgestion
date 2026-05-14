@@ -9,8 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { apiFetch } from '@/lib/api-client';
-import { AlertCircle, Lock } from 'lucide-react';
+import { apiFetch, apiUpload } from '@/lib/api-client';
+import { AlertCircle, Lock, QrCode, Trash2 } from 'lucide-react';
 
 interface NegocioData {
   id: string;
@@ -22,6 +22,7 @@ interface NegocioData {
   email: string | null;
   ambienteSri: string;
   certificadoPath: string | null;
+  qrCodePath: string | null;
 }
 
 export default function NegocioPage() {
@@ -37,7 +38,9 @@ export default function NegocioPage() {
     email: '',
     ambienteSri: 'PRUEBAS',
     certificadoPath: '',
+    qrCodePath: '',
   });
+  const [uploadingQR, setUploadingQR] = useState(false);
 
   useEffect(() => {
     const fetchNegocio = async () => {
@@ -55,6 +58,7 @@ export default function NegocioPage() {
             email: negocio.email || '',
             ambienteSri: negocio.ambienteSri || 'PRUEBAS',
             certificadoPath: negocio.certificadoPath || '',
+            qrCodePath: negocio.qrCodePath || '',
           });
         } else {
           setError(true);
@@ -91,6 +95,39 @@ export default function NegocioPage() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleUploadQR = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('La imagen no debe superar los 2MB');
+      return;
+    }
+
+    setUploadingQR(true);
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await apiUpload('/api/upload', form);
+      const data = await res.json();
+
+      if (res.ok) {
+        setFormData((prev) => ({ ...prev, qrCodePath: data.data.path }));
+        toast.success('Codigo QR subido correctamente');
+      } else {
+        toast.error(data.message || 'Error al subir');
+      }
+    } catch {
+      toast.error('Error de conexion al subir imagen');
+    } finally {
+      setUploadingQR(false);
+    }
+  };
+
+  const handleRemoveQR = () => {
+    setFormData((prev) => ({ ...prev, qrCodePath: '' }));
   };
 
   if (loading) {
@@ -248,6 +285,84 @@ export default function NegocioPage() {
                 </Button>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Codigo QR para Transferencias</CardTitle>
+            <CardDescription>
+              Imagen del codigo QR que se mostrara a los clientes al pagar con Transferencia
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {formData.qrCodePath ? (
+              <div className="space-y-3">
+                <div className="flex justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={formData.qrCodePath}
+                    alt="Codigo QR para transferencias"
+                    className="h-48 w-48 rounded-lg border border-border object-contain bg-white"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <label className="flex-1">
+                    <Button type="button" variant="outline" className="w-full" asChild>
+                      <span>
+                        <QrCode className="mr-2 h-4 w-4" />
+                        {uploadingQR ? 'Subiendo...' : 'Reemplazar QR'}
+                      </span>
+                    </Button>
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/gif,image/webp"
+                      onChange={handleUploadQR}
+                      className="hidden"
+                      disabled={uploadingQR}
+                    />
+                  </label>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    onClick={handleRemoveQR}
+                    disabled={uploadingQR}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground text-center">
+                  Esta imagen se mostrara en el POS cuando el cliente seleccione Transferencia
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex flex-col items-center gap-3 rounded-lg border-2 border-dashed border-border p-6">
+                  <QrCode className="h-10 w-10 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground text-center">
+                    Sube una imagen del codigo QR de tu cuenta bancaria
+                  </p>
+                  <label>
+                    <Button type="button" variant="outline" asChild>
+                      <span>
+                        {uploadingQR ? 'Subiendo...' : 'Seleccionar imagen'}
+                      </span>
+                    </Button>
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/gif,image/webp"
+                      onChange={handleUploadQR}
+                      className="hidden"
+                      disabled={uploadingQR}
+                    />
+                  </label>
+                  <p className="text-xs text-muted-foreground">
+                    Formatos: PNG, JPG, GIF, WebP — Max. 2MB
+                  </p>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 

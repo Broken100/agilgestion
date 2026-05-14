@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { apiFetch } from '@/lib/api-client';
+import { toast } from 'sonner';
 import { Search, Package } from 'lucide-react';
 
 interface ProductSearchProps {
@@ -37,6 +38,7 @@ export function ProductSearch({ onProductSelect }: ProductSearchProps) {
         }
       } catch (error) {
         console.error('Search error:', error);
+        toast.error('Error al buscar productos');
       } finally {
         setLoading(false);
       }

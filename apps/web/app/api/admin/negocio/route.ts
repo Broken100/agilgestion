@@ -42,7 +42,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { nombre, ruc, nombreComercial, direccion, telefono, email, ambienteSri } = body;
+    const { nombre, ruc, nombreComercial, direccion, telefono, email, ambienteSri, qrCodePath } = body;
 
     const negocioRepo = new NegocioRepository();
     const negocioActualizado = await negocioRepo.update(payload.businessId, {
@@ -53,6 +53,7 @@ export async function PUT(request: NextRequest) {
       ...(telefono !== undefined && { telefono }),
       ...(email !== undefined && { email }),
       ...(ambienteSri && { ambienteSri }),
+      ...(qrCodePath !== undefined && { qrCodePath }),
     });
 
     return NextResponse.json({ success: true, data: negocioActualizado });

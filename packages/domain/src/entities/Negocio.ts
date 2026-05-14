@@ -12,6 +12,7 @@ export interface Negocio {
   ambienteSri: AmbienteSri;
   certificadoPath: string | null;
   certificadoPassword: string | null;
+  qrCodePath: string | null;
   createdAt: Date;
 }
 
@@ -23,4 +24,5 @@ export interface NegocioInput {
   telefono?: string;
   email?: string;
   ambienteSri?: AmbienteSri;
+  qrCodePath?: string;
 }

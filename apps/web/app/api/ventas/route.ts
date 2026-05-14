@@ -8,6 +8,7 @@ import { getPool, getDb } from '@agilgestion/infrastructure';
 import { jwtAuthService } from '@agilgestion/infrastructure';
 import { eq } from 'drizzle-orm';
 import { businesses } from '@agilgestion/infrastructure';
+import { handleApiError } from '@/lib/error-handler';
 
 const CreateVentaBodySchema = z.object({
   lineas: z.array(
@@ -42,11 +43,7 @@ export async function GET(request: NextRequest) {
       data: ventas,
     });
   } catch (error) {
-    console.error('Get ventas error:', error);
-    return NextResponse.json(
-      { success: false, message: 'Error interno del servidor' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Get ventas error');
   }
 }
 
@@ -106,10 +103,6 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Create venta error:', error);
-    return NextResponse.json(
-      { success: false, message: error instanceof Error ? error.message : 'Error interno del servidor' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Create venta error');
   }
 }

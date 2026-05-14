@@ -2,12 +2,12 @@
 
 import { ErrorCard } from '@/components/ui/error-card';
 
-export default function DashboardError({
+export default function RootError({
   error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  return <ErrorCard message={error.message} onRetry={reset} />;
+  return <ErrorCard message={error.message} onRetry={reset} fullScreen />;
 }

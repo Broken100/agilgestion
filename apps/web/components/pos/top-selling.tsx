@@ -32,6 +32,7 @@ export function TopSellingProducts() {
         }
       } catch (error) {
         console.error('Top selling error:', error);
+        toast.error('Error al cargar productos populares');
       } finally {
         setLoading(false);
       }

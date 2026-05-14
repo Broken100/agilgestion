@@ -131,7 +131,8 @@ export default function ReportesPage() {
       setPaymentData(
         Object.entries(byPayment).map(([name, value]) => ({ name, value }))
       );
-    } catch {
+    } catch (err) {
+      console.error('Failed to fetch stats:', err);
       setError(true);
     } finally {
       setLoading(false);
@@ -152,7 +153,8 @@ export default function ReportesPage() {
       } else {
         toast.error('No se pudo cargar el detalle');
       }
-    } catch {
+    } catch (err) {
+      console.error('Failed to load sale detail:', err);
       toast.error('Error al cargar detalle');
     }
   };

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/auth-store';
 import { useTheme } from 'next-themes';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -17,6 +18,7 @@ import { motion } from 'motion/react';
 
 export function Header() {
   const { user, logout } = useAuthStore();
+  const router = useRouter();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -78,7 +80,7 @@ export function Header() {
             Mi perfil
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive">
+          <DropdownMenuItem onClick={() => { logout(); router.push('/'); }} className="text-destructive focus:text-destructive">
             <LogOut className="mr-2 h-4 w-4" />
             Cerrar sesion
           </DropdownMenuItem>

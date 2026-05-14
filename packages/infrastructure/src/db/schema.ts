@@ -24,6 +24,7 @@ export const businesses = pgTable('businesses', {
   ambienteSri: text('ambiente_sri').default('PRUEBAS'),
   certificadoPath: text('certificado_path'),
   certificadoPassword: text('certificado_password'),
+  qrCodePath: text('qr_code_path'),
   createdAt: timestamp('created_at').defaultNow(),
 });
 

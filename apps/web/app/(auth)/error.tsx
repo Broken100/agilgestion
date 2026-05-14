@@ -2,7 +2,7 @@
 
 import { ErrorCard } from '@/components/ui/error-card';
 
-export default function ReportesError({
+export default function AuthError({
   error,
   reset,
 }: {
@@ -11,8 +11,8 @@ export default function ReportesError({
 }) {
   return (
     <ErrorCard
-      title="Error en Reportes"
-      message={error.message || 'Ocurrio un error al cargar los reportes.'}
+      title="Error de autenticacion"
+      message={error.message || 'Ocurrio un error al cargar la pagina.'}
       onRetry={reset}
     />
   );

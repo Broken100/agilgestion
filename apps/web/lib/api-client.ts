@@ -16,3 +16,14 @@ export async function apiFetch(url: string, options?: RequestInit) {
     },
   });
 }
+
+export async function apiUpload(url: string, formData: FormData) {
+  const token = getToken();
+  return fetch(url, {
+    method: 'POST',
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: formData,
+  });
+}

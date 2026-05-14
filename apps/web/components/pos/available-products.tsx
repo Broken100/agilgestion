@@ -38,6 +38,7 @@ export function AvailableProducts() {
         }
       } catch (error) {
         console.error('Available products error:', error);
+        toast.error('Error al cargar productos disponibles');
       } finally {
         setLoading(false);
       }
@@ -57,9 +58,10 @@ export function AvailableProducts() {
         setHasMore(data.length >= PAGE_SIZE);
         setOffset((prev) => prev + data.length);
       }
-    } catch (error) {
-      console.error('Load more products error:', error);
-    } finally {
+      } catch (error) {
+        console.error('Load more products error:', error);
+        toast.error('Error al cargar más productos');
+      } finally {
       setLoadingMore(false);
     }
   }, [loadingMore, hasMore, offset]);
