@@ -1,0 +1,6 @@
+node_modules/
+.turbo/
+.next/
+dist/
+*.p12
+*.pfx
