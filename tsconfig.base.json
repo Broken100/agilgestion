@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "baseUrl": ".",
+    "paths": {
+      "@domain": ["packages/domain/src/index"],
+      "@shared": ["packages/shared/src/index"],
+      "@infrastructure": ["packages/infrastructure/src/index"],
+      "@sri": ["packages/sri/src/index"],
+      "@ui": ["packages/ui/src/index"],
+      "@web/*": ["apps/web/*"]
+    }
+  }
+}

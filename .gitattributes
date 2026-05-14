@@ -1,0 +1,3 @@
+* text=auto eol=lf
+*.{ts,tsx,js,jsx,json,md,css,html} text eol=lf
+*.png,*.jpg,*.ico,*.p12 binary

@@ -1,0 +1,32 @@
+{
+  "name": "@agilgestion/infrastructure",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "db:generate": "drizzle-kit generate --config=../../drizzle.config.ts",
+    "db:migrate": "drizzle-kit migrate --config=../../drizzle.config.ts",
+    "db:push": "drizzle-kit push --config=../../drizzle.config.ts"
+  },
+  "dependencies": {
+    "@agilgestion/domain": "workspace:*",
+    "@agilgestion/shared": "workspace:*",
+    "bcryptjs": "^3.0.3",
+    "drizzle-orm": "^0.45.2",
+    "jose": "^5.9.0",
+    "pg": "^8.13.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
+    "@types/pg": "^8.11.0",
+    "drizzle-kit": "^0.31.10",
+    "typescript": "^5.7.0"
+  }
+}
