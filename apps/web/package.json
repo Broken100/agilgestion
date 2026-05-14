@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "postinstall": "cd ../.. && npx drizzle-kit push --config=drizzle.config.ts",
     "dev": "next dev",
     "build": "next build",
+    "vercel-build": "pnpm --filter @agilgestion/infrastructure exec drizzle-kit push && next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
