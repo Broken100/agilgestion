@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
         ambienteSri: 'PRUEBAS',
         certificadoPath: null,
         qrCodePath: null,
+        logoPath: null,
       };
       return NextResponse.json({ success: true, data: negocioPorDefecto });
     }
@@ -54,7 +55,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { nombre, ruc, nombreComercial, direccion, telefono, email, ambienteSri, qrCodePath } = body;
+    const { nombre, ruc, nombreComercial, direccion, telefono, email, ambienteSri, qrCodePath, logoPath } = body;
 
     const negocioRepo = new NegocioRepository();
     const negocioActualizado = await negocioRepo.update(payload.businessId, {
@@ -66,6 +67,7 @@ export async function PUT(request: NextRequest) {
       ...(email !== undefined && { email }),
       ...(ambienteSri && { ambienteSri }),
       ...(qrCodePath !== undefined && { qrCodePath }),
+      ...(logoPath !== undefined && { logoPath }),
     });
 
     return NextResponse.json({ success: true, data: negocioActualizado });

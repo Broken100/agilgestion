@@ -6,6 +6,7 @@ export interface Usuario {
   passwordHash: string;
   nombre: string;
   rol: RolUsuario;
+  avatar: string | null;
   activo: boolean;
   createdAt: Date;
 }
@@ -17,4 +18,16 @@ export interface UsuarioInput {
   passwordHash: string;
   nombre: string;
   rol?: RolUsuario;
+}
+
+export interface UsuarioUpdate {
+  nombre?: string;
+  rol?: RolUsuario;
+  avatar?: string;
+  activo?: boolean;
+}
+
+export interface UsuarioPerfilUpdate {
+  nombre?: string;
+  avatar?: string;
 }

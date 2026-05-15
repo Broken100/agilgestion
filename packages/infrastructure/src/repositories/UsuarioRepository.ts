@@ -1,6 +1,6 @@
 // packages/infrastructure/src/repositories/UsuarioRepository.ts
 import type { IUsuarioRepository } from '@agilgestion/domain';
-import type { Usuario } from '@agilgestion/domain';
+import type { Usuario, UsuarioUpdate } from '@agilgestion/domain';
 import { requireDb } from '../db';
 import { users } from '../db/schema';
 import { eq } from 'drizzle-orm';
@@ -22,5 +22,15 @@ export class UsuarioRepository implements IUsuarioRepository {
     const db = requireDb();
     const [created] = await db.insert(users).values(usuario as unknown as any).returning();
     return created as unknown as Usuario;
+  }
+
+  async update(id: string, data: Partial<UsuarioUpdate>): Promise<Usuario> {
+    const db = requireDb();
+    const [updated] = await db
+      .update(users)
+      .set(data as unknown as any)
+      .where(eq(users.id, id))
+      .returning();
+    return updated as unknown as Usuario;
   }
 }
