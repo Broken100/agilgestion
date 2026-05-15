@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { ThemeProviders } from '@/components/theme-providers';
 import { AppToaster } from '@/components/app-toaster';
-import { MotionConfig } from 'motion/react';
 
 export const metadata: Metadata = {
   title: 'AG-Ágil Gestión',
@@ -34,12 +33,10 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-background font-sans antialiased text-foreground">
-        <MotionConfig reducedMotion="user">
-          <ThemeProviders>
-            {children}
-            <AppToaster />
-          </ThemeProviders>
-        </MotionConfig>
+        <ThemeProviders>
+          {children}
+          <AppToaster />
+        </ThemeProviders>
       </body>
     </html>
   );

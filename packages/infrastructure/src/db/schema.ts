@@ -25,6 +25,7 @@ export const businesses = pgTable('businesses', {
   certificadoPath: text('certificado_path'),
   certificadoPassword: text('certificado_password'),
   qrCodePath: text('qr_code_path'),
+  logoPath: text('logo_path'),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -39,6 +40,7 @@ export const users = pgTable(
     passwordHash: text('password_hash').notNull(),
     nombre: text('nombre').notNull(),
     rol: text('rol').notNull().default('OWNER'),
+    avatar: text('avatar'),
     activo: boolean('activo').default(true),
     createdAt: timestamp('created_at').defaultNow(),
   },
