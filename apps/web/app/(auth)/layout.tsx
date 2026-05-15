@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
 import { Sun, Moon } from 'lucide-react';
@@ -139,10 +140,12 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 }
 
 function AnimateMode({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        key={typeof children === 'object' && children !== null ? 'form' : 'form'}
+        key={pathname}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}

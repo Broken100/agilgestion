@@ -391,10 +391,22 @@ function UsuariosTab() {
         <CardDescription>Gestiona los usuarios que tienen acceso a este negocio</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <Users className="h-12 w-12 text-muted-foreground mb-4" />
-          <p className="text-muted-foreground">Sección en desarrollo</p>
-          <p className="text-sm text-muted-foreground">Pronto podrás gestionar usuarios aquí</p>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="relative mb-6">
+            <div className="absolute inset-0 bg-amber-500/20 blur-xl rounded-full" />
+            <Users className="h-16 w-16 text-amber-600 relative z-10" />
+          </div>
+          <h3 className="text-lg font-semibold mb-2">¡En construcción!</h3>
+          <p className="text-muted-foreground max-w-sm mx-auto mb-4">
+            Estamos preparando esta sección para que puedas gestionar los usuarios de tu equipo.
+          </p>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-4 py-2 rounded-full">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+            </span>
+            Próximamente disponible
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -409,10 +421,22 @@ function PreferenciasTab() {
         <CardDescription>Configura el comportamiento de la aplicación</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <Settings className="h-12 w-12 text-muted-foreground mb-4" />
-          <p className="text-muted-foreground">Sección en desarrollo</p>
-          <p className="text-sm text-muted-foreground">Pronto podrás configurar preferencias aquí</p>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="relative mb-6">
+            <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full" />
+            <Settings className="h-16 w-16 text-blue-600 relative z-10" />
+          </div>
+          <h3 className="text-lg font-semibold mb-2">¡En construcción!</h3>
+          <p className="text-muted-foreground max-w-sm mx-auto mb-4">
+            Estamos preparando opciones de personalización para que adaptes el sistema a tus necesidades.
+          </p>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-4 py-2 rounded-full">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+            </span>
+            Próximamente disponible
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -427,10 +451,22 @@ function AppearanceTab() {
         <CardDescription>Personaliza la apariencia de tu negocio</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <Palette className="h-12 w-12 text-muted-foreground mb-4" />
-          <p className="text-muted-foreground">Sección en desarrollo</p>
-          <p className="text-sm text-muted-foreground">Pronto podrás personalizar la apariencia aquí</p>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="relative mb-6">
+            <div className="absolute inset-0 bg-violet-500/20 blur-xl rounded-full" />
+            <Palette className="h-16 w-16 text-violet-600 relative z-10" />
+          </div>
+          <h3 className="text-lg font-semibold mb-2">¡En construcción!</h3>
+          <p className="text-muted-foreground max-w-sm mx-auto mb-4">
+            Estamos diseñando herramientas para que personalices el look & feel de tu negocio.
+          </p>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-4 py-2 rounded-full">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
+            </span>
+            Próximamente disponible
+          </div>
         </div>
       </CardContent>
     </Card>
