@@ -15,7 +15,19 @@ export async function GET(request: NextRequest) {
     const negocio = await negocioRepo.findById(payload.businessId);
 
     if (!negocio) {
-      return NextResponse.json({ success: false, message: 'Negocio no encontrado' }, { status: 404 });
+      const negocioPorDefecto = {
+        id: payload.businessId,
+        nombre: '',
+        ruc: '',
+        nombreComercial: null,
+        direccion: null,
+        telefono: null,
+        email: null,
+        ambienteSri: 'PRUEBAS',
+        certificadoPath: null,
+        qrCodePath: null,
+      };
+      return NextResponse.json({ success: true, data: negocioPorDefecto });
     }
 
     return NextResponse.json({ success: true, data: negocio });
