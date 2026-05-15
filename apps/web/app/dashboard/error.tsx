@@ -1,7 +1,5 @@
 'use client';
 
-import { ErrorCard } from '@/components/ui/error-card';
-
 export default function DashboardError({
   error,
   reset,
@@ -9,5 +7,16 @@ export default function DashboardError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  return <ErrorCard message={error.message} onRetry={reset} />;
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 p-4">
+      <h1 className="text-xl font-bold">Algo salió mal</h1>
+      <p className="text-sm text-muted-foreground">{error.message || 'Error desconocido'}</p>
+      <button
+        onClick={reset}
+        className="px-4 py-2 text-sm border rounded-md"
+      >
+        Reintentar
+      </button>
+    </div>
+  );
 }
