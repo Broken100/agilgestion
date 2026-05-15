@@ -8,9 +8,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { apiFetch, apiUpload } from '@/lib/api-client';
-import { AlertCircle, Lock, QrCode, Trash2 } from 'lucide-react';
+import { AlertCircle, Lock, QrCode, Trash2, Users, Palette, Settings } from 'lucide-react';
 
 interface NegocioData {
   id: string;
@@ -23,79 +24,235 @@ interface NegocioData {
   ambienteSri: string;
   certificadoPath: string | null;
   qrCodePath: string | null;
+  logoPath: string | null;
+  preferencias: Record<string, unknown> | null;
 }
 
-export default function NegocioPage() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [formData, setFormData] = useState({
-    nombre: '',
-    ruc: '',
-    nombreComercial: '',
-    direccion: '',
-    telefono: '',
-    email: '',
-    ambienteSri: 'PRUEBAS',
-    certificadoPath: '',
-    qrCodePath: '',
+interface TabProps {
+  formData: NegocioData;
+  setFormData: React.Dispatch<React.SetStateAction<NegocioData>>;
+  saving: boolean;
+  setSaving: (saving: boolean) => void;
+}
+
+function GeneralTab({ formData, setFormData, saving, setSaving }: TabProps) {
+  const [localData, setLocalData] = useState({
+    nombre: formData.nombre,
+    ruc: formData.ruc,
+    nombreComercial: formData.nombreComercial || '',
+    direccion: formData.direccion || '',
+    telefono: formData.telefono || '',
+    email: formData.email || '',
   });
-  const [uploadingQR, setUploadingQR] = useState(false);
 
   useEffect(() => {
-    const fetchNegocio = async () => {
-      try {
-        const res = await apiFetch('/api/admin/negocio');
-        if (res.ok) {
-          const data = await res.json();
-          const negocio = data.data;
-          setFormData({
-            nombre: negocio.nombre || '',
-            ruc: negocio.ruc || '',
-            nombreComercial: negocio.nombreComercial || '',
-            direccion: negocio.direccion || '',
-            telefono: negocio.telefono || '',
-            email: negocio.email || '',
-            ambienteSri: negocio.ambienteSri || 'PRUEBAS',
-            certificadoPath: negocio.certificadoPath || '',
-            qrCodePath: negocio.qrCodePath || '',
-          });
-        } else {
-          setError(true);
-        }
-      } catch {
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
+    setLocalData({
+      nombre: formData.nombre,
+      ruc: formData.ruc,
+      nombreComercial: formData.nombreComercial || '',
+      direccion: formData.direccion || '',
+      telefono: formData.telefono || '',
+      email: formData.email || '',
+    });
+  }, [formData]);
 
-    fetchNegocio();
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async () => {
     setSaving(true);
-
     try {
       const res = await apiFetch('/api/admin/negocio', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(localData),
       });
-
       if (res.ok) {
+        setFormData((prev) => ({ ...prev, ...localData }));
         toast.success('Cambios guardados correctamente');
       } else {
         const data = await res.json();
         toast.error(data.message || 'Error al guardar');
       }
-    } catch (err) {
-      toast.error('Error de conexion');
+    } catch {
+      toast.error('Error de conexión');
     } finally {
       setSaving(false);
     }
   };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Información General</CardTitle>
+        <CardDescription>Datos básicos de tu negocio</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="nombre">Nombre / Razón Social</Label>
+            <Input
+              id="nombre"
+              value={localData.nombre}
+              onChange={(e) => setLocalData({ ...localData, nombre: e.target.value })}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="ruc">RUC</Label>
+            <Input
+              id="ruc"
+              value={localData.ruc}
+              onChange={(e) => setLocalData({ ...localData, ruc: e.target.value })}
+              required
+              maxLength={13}
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="nombreComercial">Nombre Comercial</Label>
+            <Input
+              id="nombreComercial"
+              value={localData.nombreComercial}
+              onChange={(e) => setLocalData({ ...localData, nombreComercial: e.target.value })}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email de contacto</Label>
+            <Input
+              id="email"
+              type="email"
+              value={localData.email}
+              onChange={(e) => setLocalData({ ...localData, email: e.target.value })}
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="telefono">Teléfono</Label>
+            <Input
+              id="telefono"
+              value={localData.telefono}
+              onChange={(e) => setLocalData({ ...localData, telefono: e.target.value })}
+              placeholder="+593 99 123 4567"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="direccion">Dirección</Label>
+            <Input
+              id="direccion"
+              value={localData.direccion}
+              onChange={(e) => setLocalData({ ...localData, direccion: e.target.value })}
+              placeholder="Av. Principal 123, Ciudad"
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end pt-4">
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? 'Guardando...' : 'Guardar cambios'}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SriTab({ formData, setFormData, saving, setSaving }: TabProps) {
+  const [localData, setLocalData] = useState({
+    ambienteSri: formData.ambienteSri,
+  });
+
+  useEffect(() => {
+    setLocalData({ ambienteSri: formData.ambienteSri });
+  }, [formData.ambienteSri]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const res = await apiFetch('/api/admin/negocio', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(localData),
+      });
+      if (res.ok) {
+        setFormData((prev) => ({ ...prev, ...localData }));
+        toast.success('Cambios guardados correctamente');
+      } else {
+        const data = await res.json();
+        toast.error(data.message || 'Error al guardar');
+      }
+    } catch {
+      toast.error('Error de conexión');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Configuración SRI</CardTitle>
+        <CardDescription>Ambiente y certificado digital</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="ambienteSri">Ambiente</Label>
+          <Select
+            value={localData.ambienteSri}
+            onValueChange={(value) => setLocalData({ ...localData, ambienteSri: value })}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Seleccionar ambiente" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="PRUEBAS">Pruebas (Desarrollo)</SelectItem>
+              <SelectItem value="PRODUCCIÓN">Producción (Real)</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            {localData.ambienteSri === 'PRUEBAS'
+              ? 'Las facturas se emitirán en modo de pruebas del SRI'
+              : 'Las facturas se emitirán al ambiente de producción del SRI'}
+          </p>
+        </div>
+
+        <Separator />
+
+        <div className="space-y-2">
+          <Label>Certificado Digital</Label>
+          <div className="flex items-center gap-3 rounded-md border border-border p-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted">
+              <Lock className="h-5 w-5" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium">
+                {formData.certificadoPath ? 'Certificado cargado' : 'Sin certificado'}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {formData.certificadoPath
+                  ? formData.certificadoPath.split('/').pop()
+                  : 'Carga un archivo .p12 para firmar facturas electrónicas'}
+              </p>
+            </div>
+            <Button type="button" variant="outline" size="sm" disabled>
+              {formData.certificadoPath ? 'Cambiar' : 'Subir'}
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex justify-end pt-4">
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? 'Guardando...' : 'Guardar cambios'}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function PagosTab({ formData, setFormData, saving, setSaving }: TabProps) {
+  const [uploadingQR, setUploadingQR] = useState(false);
 
   const handleUploadQR = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -114,21 +271,225 @@ export default function NegocioPage() {
       const data = await res.json();
 
       if (res.ok) {
-        setFormData((prev) => ({ ...prev, qrCodePath: data.data.path }));
-        toast.success('Codigo QR subido correctamente');
+        const newQrCodePath = data.data.path;
+        const res2 = await apiFetch('/api/admin/negocio', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ qrCodePath: newQrCodePath }),
+        });
+        if (res2.ok) {
+          setFormData((prev) => ({ ...prev, qrCodePath: newQrCodePath }));
+          toast.success('Código QR subido correctamente');
+        }
       } else {
         toast.error(data.message || 'Error al subir');
       }
     } catch {
-      toast.error('Error de conexion al subir imagen');
+      toast.error('Error de conexión al subir imagen');
     } finally {
       setUploadingQR(false);
     }
   };
 
-  const handleRemoveQR = () => {
-    setFormData((prev) => ({ ...prev, qrCodePath: '' }));
+  const handleRemoveQR = async () => {
+    const res = await apiFetch('/api/admin/negocio', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ qrCodePath: '' }),
+    });
+    if (res.ok) {
+      setFormData((prev) => ({ ...prev, qrCodePath: '' }));
+    }
   };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Código QR para Transferencias</CardTitle>
+        <CardDescription>
+          Imagen del código QR que se mostrará a los clientes al pagar con Transferencia
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {formData.qrCodePath ? (
+          <div className="space-y-3">
+            <div className="flex justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={formData.qrCodePath}
+                alt="Código QR para transferencias"
+                className="h-48 w-48 rounded-lg border border-border object-contain bg-white"
+              />
+            </div>
+            <div className="flex gap-2">
+              <label className="flex-1">
+                <Button type="button" variant="outline" className="w-full" asChild>
+                  <span>
+                    <QrCode className="mr-2 h-4 w-4" />
+                    {uploadingQR ? 'Subiendo...' : 'Reemplazar QR'}
+                  </span>
+                </Button>
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/gif,image/webp"
+                  onChange={handleUploadQR}
+                  className="hidden"
+                  disabled={uploadingQR}
+                />
+              </label>
+              <Button
+                type="button"
+                variant="destructive"
+                size="icon"
+                onClick={handleRemoveQR}
+                disabled={uploadingQR}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground text-center">
+              Esta imagen se mostrará en el POS cuando el cliente seleccione Transferencia
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="flex flex-col items-center gap-3 rounded-lg border-2 border-dashed border-border p-6">
+              <QrCode className="h-10 w-10 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground text-center">
+                Sube una imagen del código QR de tu cuenta bancaria
+              </p>
+              <label>
+                <Button type="button" variant="outline" asChild>
+                  <span>
+                    {uploadingQR ? 'Subiendo...' : 'Seleccionar imagen'}
+                  </span>
+                </Button>
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/gif,image/webp"
+                  onChange={handleUploadQR}
+                  className="hidden"
+                  disabled={uploadingQR}
+                />
+              </label>
+              <p className="text-xs text-muted-foreground">
+                Formatos: PNG, JPG, GIF, WebP — Max. 2MB
+              </p>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function UsuariosTab() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Usuarios del Negocio</CardTitle>
+        <CardDescription>Gestiona los usuarios que tienen acceso a este negocio</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col items-center justify-center py-8 text-center">
+          <Users className="h-12 w-12 text-muted-foreground mb-4" />
+          <p className="text-muted-foreground">Sección en desarrollo</p>
+          <p className="text-sm text-muted-foreground">Pronto podrás gestionar usuarios aquí</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function PreferenciasTab() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Preferencias del Sistema</CardTitle>
+        <CardDescription>Configura el comportamiento de la aplicación</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col items-center justify-center py-8 text-center">
+          <Settings className="h-12 w-12 text-muted-foreground mb-4" />
+          <p className="text-muted-foreground">Sección en desarrollo</p>
+          <p className="text-sm text-muted-foreground">Pronto podrás configurar preferencias aquí</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function AppearanceTab() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Apariencia y Branding</CardTitle>
+        <CardDescription>Personaliza la apariencia de tu negocio</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col items-center justify-center py-8 text-center">
+          <Palette className="h-12 w-12 text-muted-foreground mb-4" />
+          <p className="text-muted-foreground">Sección en desarrollo</p>
+          <p className="text-sm text-muted-foreground">Pronto podrás personalizar la apariencia aquí</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default function NegocioPage() {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState('general');
+  const [formData, setFormData] = useState<NegocioData>({
+    id: '',
+    nombre: '',
+    ruc: '',
+    nombreComercial: null,
+    direccion: null,
+    telefono: null,
+    email: null,
+    ambienteSri: 'PRUEBAS',
+    certificadoPath: null,
+    qrCodePath: null,
+    logoPath: null,
+    preferencias: null,
+  });
+
+  useEffect(() => {
+    const fetchNegocio = async () => {
+      try {
+        const res = await apiFetch('/api/admin/negocio');
+        if (res.ok) {
+          const data = await res.json();
+          const negocio = data.data;
+          setFormData({
+            id: negocio.id || '',
+            nombre: negocio.nombre || '',
+            ruc: negocio.ruc || '',
+            nombreComercial: negocio.nombreComercial || null,
+            direccion: negocio.direccion || null,
+            telefono: negocio.telefono || null,
+            email: negocio.email || null,
+            ambienteSri: negocio.ambienteSri || 'PRUEBAS',
+            certificadoPath: negocio.certificadoPath || null,
+            qrCodePath: negocio.qrCodePath || null,
+            logoPath: negocio.logoPath || null,
+            preferencias: negocio.preferencias || null,
+          });
+        } else {
+          setError(true);
+        }
+      } catch {
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNegocio();
+  }, []);
 
   if (loading) {
     return (
@@ -137,7 +498,7 @@ export default function NegocioPage() {
           <Skeleton className="h-7 w-48 mb-2" />
           <Skeleton className="h-4 w-72" />
         </div>
-        <Skeleton className="h-72 rounded-lg" />
+        <Skeleton className="h-10 w-full" />
         <Skeleton className="h-72 rounded-lg" />
       </div>
     );
@@ -147,7 +508,7 @@ export default function NegocioPage() {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center p-4">
         <AlertCircle className="h-10 w-10 text-destructive mb-2" />
-        <p className="text-sm text-muted-foreground mb-3">Error al cargar configuracion del negocio</p>
+        <p className="text-sm text-muted-foreground mb-3">Error al cargar configuración del negocio</p>
         <Button variant="outline" size="sm" onClick={() => { setError(false); setLoading(true); window.location.reload(); }}>
           Reintentar
         </Button>
@@ -158,227 +519,41 @@ export default function NegocioPage() {
   return (
     <div className="space-y-6 p-4">
       <div>
-        <h1 className="text-xl font-bold text-foreground">Configuracion del Negocio</h1>
-        <p className="text-sm text-muted-foreground">Informacion general y ajustes del SRI</p>
+        <h1 className="text-xl font-bold text-foreground">Configuración del Negocio</h1>
+        <p className="text-sm text-muted-foreground">Administra la información y preferencias de tu negocio</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Informacion General</CardTitle>
-            <CardDescription>Datos basicos de tu negocio</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="nombre">Nombre / Razon Social</Label>
-                <Input
-                  id="nombre"
-                  value={formData.nombre}
-                  onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="ruc">RUC</Label>
-                <Input
-                  id="ruc"
-                  value={formData.ruc}
-                  onChange={(e) => setFormData({ ...formData, ruc: e.target.value })}
-                  required
-                  maxLength={13}
-                  pattern="\d{13}"
-                />
-              </div>
-            </div>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="general">General</TabsTrigger>
+          <TabsTrigger value="sri">SRI</TabsTrigger>
+          <TabsTrigger value="pagos">Pagos</TabsTrigger>
+          <TabsTrigger value="usuarios">Usuarios</TabsTrigger>
+          <TabsTrigger value="preferencias">Preferencias</TabsTrigger>
+          <TabsTrigger value="appearance">Apariencia</TabsTrigger>
+        </TabsList>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="nombreComercial">Nombre Comercial</Label>
-                <Input
-                  id="nombreComercial"
-                  value={formData.nombreComercial}
-                  onChange={(e) => setFormData({ ...formData, nombreComercial: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email de contacto</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="telefono">Telefono</Label>
-                <Input
-                  id="telefono"
-                  value={formData.telefono}
-                  onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-                  placeholder="+593 99 123 4567"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="direccion">Direccion</Label>
-                <Input
-                  id="direccion"
-                  value={formData.direccion}
-                  onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
-                  placeholder="Av. Principal 123, Ciudad"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Configuracion SRI</CardTitle>
-            <CardDescription>Ambiente y certificado digital</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="ambienteSri">Ambiente</Label>
-              <Select
-                value={formData.ambienteSri}
-                onValueChange={(value) => setFormData({ ...formData, ambienteSri: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar ambiente" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="PRUEBAS">Pruebas (Desarrollo)</SelectItem>
-                  <SelectItem value="PRODUCCION">Produccion (Real)</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                {formData.ambienteSri === 'PRUEBAS'
-                  ? 'Las facturas se emitiran en modo de pruebas del SRI'
-                  : 'Las facturas se emitiran al ambiente de produccion del SRI'}
-              </p>
-            </div>
-
-            <Separator />
-
-            <div className="space-y-2">
-              <Label>Certificado Digital</Label>
-              <div className="flex items-center gap-3 rounded-md border border-border p-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted">
-                  <Lock className="h-5 w-5" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">
-                    {formData.certificadoPath ? 'Certificado cargado' : 'Sin certificado'}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {formData.certificadoPath
-                      ? formData.certificadoPath.split('/').pop()
-                      : 'Carga un archivo .p12 para firmar facturas electronicas'}
-                  </p>
-                </div>
-                <Button type="button" variant="outline" size="sm" disabled>
-                  {formData.certificadoPath ? 'Cambiar' : 'Subir'}
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Codigo QR para Transferencias</CardTitle>
-            <CardDescription>
-              Imagen del codigo QR que se mostrara a los clientes al pagar con Transferencia
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {formData.qrCodePath ? (
-              <div className="space-y-3">
-                <div className="flex justify-center">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={formData.qrCodePath}
-                    alt="Codigo QR para transferencias"
-                    className="h-48 w-48 rounded-lg border border-border object-contain bg-white"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <label className="flex-1">
-                    <Button type="button" variant="outline" className="w-full" asChild>
-                      <span>
-                        <QrCode className="mr-2 h-4 w-4" />
-                        {uploadingQR ? 'Subiendo...' : 'Reemplazar QR'}
-                      </span>
-                    </Button>
-                    <input
-                      type="file"
-                      accept="image/png,image/jpeg,image/gif,image/webp"
-                      onChange={handleUploadQR}
-                      className="hidden"
-                      disabled={uploadingQR}
-                    />
-                  </label>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    onClick={handleRemoveQR}
-                    disabled={uploadingQR}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-                <p className="text-xs text-muted-foreground text-center">
-                  Esta imagen se mostrara en el POS cuando el cliente seleccione Transferencia
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <div className="flex flex-col items-center gap-3 rounded-lg border-2 border-dashed border-border p-6">
-                  <QrCode className="h-10 w-10 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground text-center">
-                    Sube una imagen del codigo QR de tu cuenta bancaria
-                  </p>
-                  <label>
-                    <Button type="button" variant="outline" asChild>
-                      <span>
-                        {uploadingQR ? 'Subiendo...' : 'Seleccionar imagen'}
-                      </span>
-                    </Button>
-                    <input
-                      type="file"
-                      accept="image/png,image/jpeg,image/gif,image/webp"
-                      onChange={handleUploadQR}
-                      className="hidden"
-                      disabled={uploadingQR}
-                    />
-                  </label>
-                  <p className="text-xs text-muted-foreground">
-                    Formatos: PNG, JPG, GIF, WebP — Max. 2MB
-                  </p>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <div className="flex justify-end">
-          <Button type="submit" disabled={saving}>
-            {saving ? (
-              <>
-                <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                Guardando...
-              </>
-            ) : (
-              'Guardar cambios'
-            )}
-          </Button>
+        <div className="mt-6">
+          <TabsContent value="general">
+            <GeneralTab formData={formData} setFormData={setFormData} saving={saving} setSaving={setSaving} />
+          </TabsContent>
+          <TabsContent value="sri">
+            <SriTab formData={formData} setFormData={setFormData} saving={saving} setSaving={setSaving} />
+          </TabsContent>
+          <TabsContent value="pagos">
+            <PagosTab formData={formData} setFormData={setFormData} saving={saving} setSaving={setSaving} />
+          </TabsContent>
+          <TabsContent value="usuarios">
+            <UsuariosTab />
+          </TabsContent>
+          <TabsContent value="preferencias">
+            <PreferenciasTab />
+          </TabsContent>
+          <TabsContent value="appearance">
+            <AppearanceTab />
+          </TabsContent>
         </div>
-      </form>
+      </Tabs>
     </div>
   );
 }
