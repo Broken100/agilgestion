@@ -13,7 +13,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       <main className="flex-1 pb-[calc(56px+env(safe-area-inset-bottom))]">
         <AnimatePresence mode="wait">
           <motion.div
-            key={typeof children === 'object' && children !== null && 'props' in children ? (children as ReactNode & { props?: { children?: ReactNode } }).props?.children?.toString() || 'page' : 'page'}
+            key="dashboard-page"
             initial="initial"
             animate="animate"
             exit="exit"
